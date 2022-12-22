@@ -7,8 +7,9 @@
 
 import Foundation
 
-struct ItemModel: Identifiable {
+struct ItemModel: Identifiable, Codable {
     // Item model conforms to identifiable protocol
+    // And conforms to codable protocol so it can be encoded and decoded
     let id: String
     let title: String
     let isCompleted: Bool
