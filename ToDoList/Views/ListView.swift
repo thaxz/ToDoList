@@ -9,28 +9,32 @@ import SwiftUI
 
 struct ListView: View {
     
-    @State var items: [ItemModel] = [
-        ItemModel(title: "First", isCompleted: false),
-        ItemModel(title: "Second", isCompleted: true),
-        ItemModel(title: "Third", isCompleted: false)
-    ]
+    // acessing our model that we set as an environment object
+    @EnvironmentObject var listViewModel: ListViewModel
     
     var body: some View {
         List{
             // there's no need for an ID because we already made one at our item model
-            ForEach(items)  { item in
+            ForEach(listViewModel.items)  { item in
                 ListRowView(item: item)
-                
+                // what's going to happen when you touch an item
+                    .onTapGesture {
+                        withAnimation(.linear){
+                            listViewModel.updateItem(item: item)
+                        }
+                    }
             }
+            .onDelete(perform: listViewModel.deleteItem)
+            .onMove(perform: listViewModel.moveItem)
+            
         }
         .listStyle(PlainListStyle())
+        // customizing navigation and navItems
         .navigationTitle("To do list")
         .navigationBarItems(
             leading: EditButton(),
             trailing:
-                NavigationLink("Add",
-                               destination: AddView()
-                              )
+                NavigationLink("Add", destination: AddView())
         )
     }
 }
@@ -40,5 +44,6 @@ struct ListView_Previews: PreviewProvider {
         NavigationView{
             ListView()
         }
+        .environmentObject(ListViewModel())
     }
 }

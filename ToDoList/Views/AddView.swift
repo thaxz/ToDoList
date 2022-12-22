@@ -8,7 +8,16 @@
 import SwiftUI
 
 struct AddView: View {
+    
     @State var textfieldText: String = ""
+    // acessing our list using enviromentObject
+    @EnvironmentObject var listViewModel: ListViewModel
+    // just to "dismiss" this screen and go back one on our view hierarchy
+    @Environment(\.presentationMode) var presentationMode
+    
+    // creating alert
+    @State var alertTitle: String = ""
+    @State var showAlert: Bool = false
     
     var body: some View {
         ScrollView {
@@ -21,7 +30,7 @@ struct AddView: View {
                     .cornerRadius(10)
                 
                 Button {
-                    
+                    saveNewItem()
                 } label: {
                     Text("SAVE")
                         .font(.headline)
@@ -31,13 +40,41 @@ struct AddView: View {
                         .background(Color.blue)
                         .cornerRadius(10)
                 }
-
             }
             .padding(14)
             
         }
         .navigationTitle("Add an item")
+        .alert(isPresented: $showAlert) {
+            getAlert()
+        }
     }
+    
+    func saveNewItem(){
+        if textIsAppropriate() {
+            listViewModel.addItem(title: textfieldText)
+            // going back one screen
+            presentationMode.wrappedValue.dismiss()
+        } else {
+            
+        }
+    }
+    
+    // checking if the new item is valid to be added
+    func textIsAppropriate() -> Bool {
+        if textfieldText.count < 3 {
+            alertTitle = "Your new item must be at least 3 characters long."
+            // telling to show the alert
+            showAlert.toggle()
+            return false
+        }
+        return true
+    }
+    
+    func getAlert() -> Alert{
+        return Alert(title: Text(alertTitle))
+    }
+    
 }
 
 struct AddView_Previews: PreviewProvider {
@@ -45,5 +82,6 @@ struct AddView_Previews: PreviewProvider {
         NavigationView{
             AddView()
         }
+        .environmentObject(ListViewModel())
     }
 }
